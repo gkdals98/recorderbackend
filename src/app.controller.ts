@@ -2,23 +2,33 @@ import { Controller, Get, Post, UseInterceptors, UploadedFile } from '@nestjs/co
 import { FileInterceptor }from '@nestjs/platform-express';
 import { AppService } from './app.service';
 
-@Controller()
+@Controller('upload')
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get()
+  @Get('/sample')
   getHello(): string {
     return this.appService.getHello();
   }
 
-  @Get("sample")
-  getSample(): string {
-    return "sample string";
-  }
-
-  @Post('upload')
+  @Post('/')
   @UseInterceptors(FileInterceptor('file'))
-  uploadFile(@UploadedFile() file: Express.Multer.File) {
-    console.log("This is File", file);
+  uploadFile(
+    @UploadedFile() file: Express.Multer.File
+  ) {
+    console.log('file uploaded ', file);
+    return {
+      message: 'Upload Success',
+    }
+  }
+  @Post('/file')
+  @UseInterceptors(FileInterceptor('file'))
+  upload(
+    @UploadedFile() file: Express.Multer.File
+  ) {
+    console.log('file uploaded ', file);
+    return {
+      message: 'Upload Success',
+    }
   }
 }
