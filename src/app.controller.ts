@@ -1,32 +1,37 @@
-import { Controller, Get, Post, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Param, UseInterceptors, UploadedFile, Res, Query } from '@nestjs/common';
 import { FileInterceptor }from '@nestjs/platform-express';
-import { AppService } from './app.service';
+import { Response } from 'express';
+
+import { ConfigService } from '@nestjs/config';
 
 @Controller('upload')
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private config: ConfigService)  {}
 
-  @Get('/sample')
+  @Get('/test')
   getHello(): string {
-    return this.appService.getHello();
+    return "Server Status OK";
   }
 
-  @Post('/')
+  @Post('/video/upload')
   @UseInterceptors(FileInterceptor('file'))
   uploadFile(
     @UploadedFile() file: Express.Multer.File
   ) {
-    console.log('file uploaded ', file);
+    //this.config => 출처 : https://docs.nestjs.com/techniques/configuration
+    const path = file.path.replace(this.config.get('VIDEO_UPLOAD_PATH'), '');
     return {
+      fileName: file.originalname,
+      savePath: path.replace(/\\/gi, '/'),
+      size: file.size,
       message: 'Upload Success',
     }
   }
-  @Post('/file')
+  @Post('/listfile')
   @UseInterceptors(FileInterceptor('file'))
   upload(
     @UploadedFile() file: Express.Multer.File
   ) {
-    console.log('file uploaded ', file);
     return {
       message: 'Upload Success',
     }
